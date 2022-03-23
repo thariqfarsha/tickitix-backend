@@ -26,6 +26,16 @@ module.exports = {
   getMovieById: async (req, res) => {
     try {
       const { id } = req.params;
+      const result = await movieModel.getMovieById(id);
+
+      if (result.length <= 0) {
+        return helperWrapper.response(
+          res,
+          404,
+          `Data by id ${id} not found`,
+          null
+        );
+      }
 
       return helperWrapper.response(
         res,

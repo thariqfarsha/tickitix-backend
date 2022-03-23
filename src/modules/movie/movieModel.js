@@ -11,4 +11,18 @@ module.exports = {
         }
       });
     }),
+  getMovieById: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT * FROM movie WHERE id = ?",
+        id,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
 };
