@@ -36,13 +36,7 @@ module.exports = {
           null
         );
       }
-
-      return helperWrapper.response(
-        res,
-        200,
-        "Success get data!",
-        "Hello World"
-      );
+      return helperWrapper.response(res, 200, "Success get data!", result);
     } catch (error) {
       return helperWrapper.response(res, 400, "Bad request", null);
     }
