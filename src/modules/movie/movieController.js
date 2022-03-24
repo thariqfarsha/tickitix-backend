@@ -137,12 +137,20 @@ module.exports = {
   },
   deleteMovie: async (req, res) => {
     try {
-      return helperWrapper.response(
-        res,
-        200,
-        "Success get data!",
-        "Hello World"
-      );
+      const { id } = req.params;
+      const checkId = await movieModel.getMovieById(id);
+      if (checkId.length <= 0) {
+        return helperWrapper.response(
+          res,
+          404,
+          `Data by id ${id} not found`,
+          null
+        );
+      }
+
+      const result = await movieModel.deleteMovie(id);
+
+      return helperWrapper.response(res, 200, "Success delete data!", result);
     } catch (error) {
       return helperWrapper.response(res, 400, "Bad request", null);
     }

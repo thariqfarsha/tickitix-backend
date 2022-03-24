@@ -74,4 +74,14 @@ module.exports = {
         }
       );
     }),
+  deleteMovie: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query("DELETE FROM movie WHERE id = ?", id, (error) => {
+        if (!error) {
+          resolve({ id });
+        } else {
+          reject(new Error(error.sqlMessage));
+        }
+      });
+    }),
 };
