@@ -4,9 +4,12 @@ const scheduleModel = require("./scheduleModel");
 module.exports = {
   getAllSchedule: async (req, res) => {
     try {
-      let { page, limit } = req.query;
-      page = +page;
+      // eslint-disable-next-line prefer-const
+      let { page, limit, movieId, searchLocation, sort } = req.query;
+      page = +page || 1;
       limit = +limit;
+      searchLocation = `%${searchLocation}%`;
+      sort = sort || "premiere";
 
       const offset = page * limit - limit;
       const totalData = await scheduleModel.getCountSchedule();
@@ -18,7 +21,13 @@ module.exports = {
         totalPage,
       };
 
-      const result = await scheduleModel.getAllSchedule(limit, offset);
+      const result = await scheduleModel.getAllSchedule(
+        limit,
+        offset,
+        movieId,
+        searchLocation,
+        sort
+      );
 
       return helperWrapper.response(
         res,

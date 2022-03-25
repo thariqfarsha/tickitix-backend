@@ -14,11 +14,11 @@ module.exports = {
         }
       );
     }),
-  getAllSchedule: (limit, offset) =>
+  getAllSchedule: (limit, offset, searchMovieId, searchLocation, sort) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM schedule LIMIT ? OFFSET ?",
-        [limit, offset],
+        `SELECT * FROM schedule WHERE movieId = ? AND location LIKE ? ORDER BY ${sort} LIMIT ? OFFSET ?`,
+        [searchMovieId, searchLocation, limit, offset],
         (error, result) => {
           if (!error) {
             resolve(result);

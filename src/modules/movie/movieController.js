@@ -16,9 +16,12 @@ module.exports = {
   },
   getAllMovie: async (req, res) => {
     try {
-      let { page, limit } = req.query;
-      page = Number(page);
-      limit = Number(limit);
+      let { page, limit, searchName, sort } = req.query;
+      page = +page || 1;
+      limit = +limit;
+      searchName = `%${searchName}%`;
+      sort = sort || "name";
+
       const offset = page * limit - limit;
       const totalData = await movieModel.getCountMovie();
       const totalPage = Math.ceil(totalData / limit);
@@ -29,7 +32,12 @@ module.exports = {
         totalData,
       };
 
-      const result = await movieModel.getAllMovie(limit, offset);
+      const result = await movieModel.getAllMovie(
+        limit,
+        offset,
+        searchName,
+        sort
+      );
 
       return helperWrapper.response(
         res,

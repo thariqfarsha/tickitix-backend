@@ -14,11 +14,11 @@ module.exports = {
         }
       );
     }),
-  getAllMovie: (limit, offset) =>
+  getAllMovie: (limit, offset, searchName, sort) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM movie LIMIT ? OFFSET ?",
-        [limit, offset],
+        `SELECT * FROM movie WHERE name LIKE ? ORDER BY ${sort} LIMIT ? OFFSET ?`,
+        [searchName, limit, offset],
         (error, result) => {
           if (!error) {
             resolve(result);
