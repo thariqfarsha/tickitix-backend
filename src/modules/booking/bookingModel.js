@@ -86,4 +86,18 @@ module.exports = {
         }
       );
     }),
+  updateStatusBooking: (data, id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "UPDATE booking SET ? WHERE id = ?",
+        [data, id],
+        (error) => {
+          if (!error) {
+            resolve({ id, updatedAt: data.updatedAt });
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
 };
