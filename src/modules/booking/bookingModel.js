@@ -58,11 +58,11 @@ module.exports = {
         }
       );
     }),
-  getSeatBooking: (premiere, dateBooking, timeBooking) =>
+  getSeatBooking: (scheduleId, dateBooking, timeBooking) =>
     new Promise((resolve, reject) => {
-      const q = connection.query(
-        "SELECT seat FROM bookingSeat JOIN booking ON bookingSeat.bookingId = booking.id JOIN schedule ON booking.scheduleId = schedule.id WHERE schedule.premiere = ? AND dateBooking = ? AND timeBooking = ?",
-        [premiere, dateBooking, timeBooking],
+      connection.query(
+        "SELECT seat FROM bookingSeat JOIN booking ON bookingSeat.bookingId = booking.id WHERE scheduleId = ? AND dateBooking = ? AND timeBooking = ?",
+        [scheduleId, dateBooking, timeBooking],
         (error, result) => {
           if (!error) {
             const newResult = result.map((seatObject) => seatObject.seat);
@@ -72,6 +72,18 @@ module.exports = {
           }
         }
       );
-      console.log(q);
+    }),
+  getDashboardBooking: (condition) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT MONTH(dateBooking) AS month, SUM(totalPayment) AS revenue FROM booking JOIN schedule ON booking.scheduleId = schedule.id ${condition} GROUP BY month`,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
     }),
 };

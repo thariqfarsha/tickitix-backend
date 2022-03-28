@@ -81,17 +81,33 @@ module.exports = {
         result
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(res, 400, "Bad request", null);
     }
   },
   getDashboardBooking: async (req, res) => {
     try {
+      const { premiere, movieId, location } = req.query;
+      const filters = {
+        premiere,
+        movieId,
+        location,
+      };
+
+      const condition = [];
+      Object.entries(filters).forEach((filter) => {
+        if (filter[1]) {
+          condition.push(`${filter[0]} = '${filter[1]}'`);
+        }
+      });
+      const sqlWhere =
+        condition.length > 0 ? `WHERE ${condition.join(" AND ")}` : "";
+
+      const result = await bookingModel.getDashboardBooking(sqlWhere);
       return helperWrapper.response(
         res,
         200,
         "Success get dashboard booking",
-        "data"
+        result
       );
     } catch (error) {
       return helperWrapper.response(res, 400, "Bad request", null);
