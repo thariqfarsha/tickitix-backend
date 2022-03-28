@@ -18,7 +18,7 @@ module.exports = {
     try {
       let { page, limit, searchName, sort } = req.query;
       page = +page || 1;
-      limit = +limit;
+      limit = +limit || 6;
       searchName = `%${searchName}%`;
       sort = sort || "name";
 

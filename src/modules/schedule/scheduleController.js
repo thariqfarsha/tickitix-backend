@@ -7,7 +7,7 @@ module.exports = {
       // eslint-disable-next-line prefer-const
       let { page, limit, movieId, searchLocation, sort } = req.query;
       page = +page || 1;
-      limit = +limit;
+      limit = +limit || 6;
       searchLocation = `%${searchLocation}%`;
       sort = sort || "premiere";
 
