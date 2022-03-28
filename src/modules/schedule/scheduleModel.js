@@ -17,7 +17,7 @@ module.exports = {
   getAllSchedule: (limit, offset, movieId, searchLocation, sort) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `SELECT schedule.*, movie.name, movie.category, movie.director, movie.cast, movie.releaseDate, movie.duration, movie.synopsis FROM movie JOIN schedule ON movie.id = movieId WHERE movieId = ? AND location LIKE ? ORDER BY ${sort} LIMIT ? OFFSET ?`,
+        `SELECT schedule.*, movie.name, movie.category, movie.director, movie.cast, movie.releaseDate, movie.duration, movie.synopsis FROM schedule JOIN movie ON movieId = movie.id WHERE movieId = ? AND location LIKE ? ORDER BY ${sort} LIMIT ? OFFSET ?`,
         [movieId, searchLocation, limit, offset],
         (error, result) => {
           if (!error) {
@@ -31,7 +31,7 @@ module.exports = {
   getScheduleById: (id) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM schedule WHERE id = ?",
+        "SELECT schedule.*, movie.name, movie.category, movie.director, movie.cast, movie.releaseDate, movie.duration, movie.synopsis FROM schedule JOIN movie ON movieId = movie.id WHERE schedule.id = ?",
         id,
         (error, result) => {
           if (!error) {

@@ -68,9 +68,9 @@ module.exports = {
   },
   getSeatBooking: async (req, res) => {
     try {
-      const { premiere, dateBooking, timeBooking } = req.query;
+      const { scheduleId, dateBooking, timeBooking } = req.query;
       const result = await bookingModel.getSeatBooking(
-        premiere,
+        scheduleId,
         dateBooking,
         timeBooking
       );
