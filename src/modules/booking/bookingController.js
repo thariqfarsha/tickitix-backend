@@ -27,7 +27,7 @@ module.exports = {
       const bookingInfo = await bookingModel.createBooking(bookingData);
 
       await seats.map((seat) =>
-        bookingModel.createBookingSeat({ bookingId: bookingInfo.id, seat })
+        bookingModel.createSeatBooking({ bookingId: bookingInfo.id, seat })
       );
 
       return helperWrapper.response(res, 200, "Success create booking", {
@@ -42,8 +42,13 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const result = await bookingModel.getBookingById(id);
-      if (result.length <= 0) {
+      const bookingInfo = await bookingModel.getBookingById(id);
+      const seatByBookingId = await bookingModel.getSeatBookingByBookingId(id);
+      const result = {
+        ...bookingInfo,
+        seat: seatByBookingId,
+      };
+      if (bookingInfo.length <= 0) {
         return helperWrapper.response(
           res,
           404,
@@ -63,13 +68,20 @@ module.exports = {
   },
   getSeatBooking: async (req, res) => {
     try {
+      const { premiere, dateBooking, timeBooking } = req.query;
+      const result = await bookingModel.getSeatBooking(
+        premiere,
+        dateBooking,
+        timeBooking
+      );
       return helperWrapper.response(
         res,
         200,
         "Success get seat booking",
-        "data"
+        result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(res, 400, "Bad request", null);
     }
   },
