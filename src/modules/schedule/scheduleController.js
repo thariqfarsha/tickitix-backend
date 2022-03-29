@@ -8,17 +8,20 @@ module.exports = {
       let { page, limit, movieId, searchLocation, sort } = req.query;
       page = +page || 1;
       limit = +limit || 6;
-      searchLocation = `%${searchLocation}%`;
+      searchLocation = `%${searchLocation || ""}%`;
       sort = sort || "premiere";
 
       const offset = page * limit - limit;
-      const totalData = await scheduleModel.getCountSchedule();
+      const totalData = await scheduleModel.getCountSchedule(
+        movieId,
+        searchLocation
+      );
       const totalPage = Math.ceil(totalData / limit);
       const pageInfo = {
         page,
-        limit,
-        offset,
         totalPage,
+        limit,
+        totalData,
       };
 
       const result = await scheduleModel.getAllSchedule(

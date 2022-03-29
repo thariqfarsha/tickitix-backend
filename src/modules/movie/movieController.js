@@ -19,11 +19,11 @@ module.exports = {
       let { page, limit, searchName, sort } = req.query;
       page = +page || 1;
       limit = +limit || 6;
-      searchName = `%${searchName}%`;
+      searchName = `%${searchName || ""}%`;
       sort = sort || "name";
 
       const offset = page * limit - limit;
-      const totalData = await movieModel.getCountMovie();
+      const totalData = await movieModel.getCountMovie(searchName);
       const totalPage = Math.ceil(totalData / limit);
       const pageInfo = {
         page,
