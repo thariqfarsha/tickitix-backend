@@ -76,7 +76,7 @@ module.exports = {
   getDashboardBooking: (condition) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `SELECT MONTH(dateBooking) AS month, SUM(totalPayment) AS revenue FROM booking JOIN schedule ON booking.scheduleId = schedule.id ${condition} GROUP BY month`,
+        `SELECT MONTH(booking.createdAt) AS month, SUM(totalPayment) AS revenue FROM booking JOIN schedule ON booking.scheduleId = schedule.id ${condition} GROUP BY month`,
         (error, result) => {
           if (!error) {
             resolve(result);
