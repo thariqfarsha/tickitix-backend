@@ -21,6 +21,7 @@ app.use(xss());
 app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.static("public"));
 
 // request
 // request ditaro abis middleware, jadi midwarenya jalan dulu, baru request dijalankan
