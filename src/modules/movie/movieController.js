@@ -1,3 +1,4 @@
+const redis = require("../../config/redis");
 const helperWrapper = require("../../helpers/wrapper");
 const movieModel = require("./movieModel");
 
@@ -63,6 +64,10 @@ module.exports = {
           null
         );
       }
+
+      // Proses untuk menyimpan data di redis
+      redis.setEx(`getMovie:${id}`, 3600, JSON.stringify(result));
+
       return helperWrapper.response(res, 200, "Success get data!", result);
     } catch (error) {
       return helperWrapper.response(res, 400, "Bad request", null);
@@ -70,6 +75,7 @@ module.exports = {
   },
   createMovie: async (req, res) => {
     try {
+      console.log(req.file);
       const {
         name,
         category,
