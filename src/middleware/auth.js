@@ -15,12 +15,19 @@ module.exports = {
         return helperWrapper.response(res, 403, error.message, null);
       }
       req.decodeToken = result;
-      next();
     });
+    return next();
   },
   isAdmin: (req, res, next) => {
-    // cek apakah role user itu admin
-    // jika tidak berikan respon error
-    // jika ya, lanjut ke controller
+    const { role } = req.decodeToken;
+    if (role !== "admin") {
+      return helperWrapper.response(
+        res,
+        401,
+        "This action requires administrator privileges",
+        null
+      );
+    }
+    return next();
   },
 };
