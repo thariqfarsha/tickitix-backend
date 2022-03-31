@@ -40,6 +40,13 @@ module.exports = {
         sort
       );
 
+      // Masukkan data ke redis
+      redis.setEx(
+        `getMovie:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify({ result, pageInfo })
+      );
+
       return helperWrapper.response(
         res,
         200,
@@ -75,7 +82,6 @@ module.exports = {
   },
   createMovie: async (req, res) => {
     try {
-      console.log(req.file);
       const {
         name,
         category,
@@ -85,6 +91,10 @@ module.exports = {
         director,
         duration,
       } = req.body;
+
+      const { filename, mimetype } = req.file;
+      const imageName = `${filename.split("/")[1]}.${mimetype.split("/")[1]}`;
+
       const setData = {
         name,
         category,
@@ -93,6 +103,7 @@ module.exports = {
         cast,
         director,
         duration,
+        image: imageName,
       };
       const result = await movieModel.createMovie(setData);
 
