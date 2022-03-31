@@ -4,13 +4,35 @@ const Router = express.Router();
 
 const movieController = require("./movieController");
 const middlewareAuth = require("../../middleware/auth");
-const middlewareUpload = require("../../middleware/uploadMovie");
+const middlewareUpload = require("../../middleware/uploadFile");
+const middlewareRedis = require("../../middleware/redis");
 
-Router.get("/", middlewareAuth.authentication, movieController.getAllMovie);
-Router.get("/:id", movieController.getMovieById);
-Router.post("/", middlewareUpload, movieController.createMovie); // auth, isAdmin
-Router.patch("/:id", movieController.updateMovie); // auth, isAdmin
-Router.delete("/:id", movieController.deleteMovie); // auth, isAdmin
+Router.get("/", middlewareRedis.getAllMovieRedis, movieController.getAllMovie);
+Router.get(
+  "/:id",
+  middlewareRedis.getMovieByIdRedis,
+  movieController.getMovieById
+);
+Router.post(
+  "/",
+  middlewareAuth.authentication,
+  middlewareAuth.isAdmin,
+  middlewareUpload.moviePoster,
+  movieController.createMovie
+); // auth, isAdmin
+Router.patch(
+  "/:id",
+  middlewareAuth.authentication,
+  middlewareAuth.isAdmin,
+  middlewareRedis.clearMovieRedis,
+  movieController.updateMovie
+); // auth, isAdmin
+Router.delete(
+  "/:id",
+  middlewareAuth.authentication,
+  middlewareAuth.isAdmin,
+  movieController.deleteMovie
+); // auth, isAdmin
 
 // Router.get("/hello", movieController.getHello);
 // Router.get("/hello", (req, res) => {
