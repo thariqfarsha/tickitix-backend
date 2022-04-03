@@ -32,7 +32,12 @@ module.exports = {
   getBookingById: (bookingId) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT booking.id, scheduleId, dateBooking, timeBooking, totalTicket, totalPayment, paymentMethod, statusPayment, booking.createdAt, booking.updatedAt, movie.name, movie.category FROM booking JOIN schedule ON booking.scheduleId = schedule.id JOIN movie ON schedule.movieId = movie.id WHERE booking.id = ?",
+        `SELECT booking.id, scheduleId, dateBooking, timeBooking, totalTicket, 
+          totalPayment, paymentMethod, statusPayment, booking.createdAt, 
+          booking.updatedAt, movie.name, movie.category FROM booking 
+        JOIN schedule ON booking.scheduleId = schedule.id 
+        JOIN movie ON schedule.movieId = movie.id 
+        WHERE booking.id = ?`,
         bookingId,
         (error, result) => {
           if (!error) {
@@ -61,7 +66,9 @@ module.exports = {
   getSeatBooking: (scheduleId, dateBooking, timeBooking) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT seat FROM bookingSeat JOIN booking ON bookingSeat.bookingId = booking.id WHERE scheduleId = ? AND dateBooking = ? AND timeBooking = ?",
+        `SELECT seat FROM bookingSeat 
+        JOIN booking ON bookingSeat.bookingId = booking.id 
+        WHERE scheduleId = ? AND dateBooking = ? AND timeBooking = ?`,
         [scheduleId, dateBooking, timeBooking],
         (error, result) => {
           if (!error) {
@@ -75,8 +82,12 @@ module.exports = {
     }),
   getDashboardBooking: (condition) =>
     new Promise((resolve, reject) => {
-      connection.query(
-        `SELECT MONTH(booking.createdAt) AS month, SUM(totalPayment) AS revenue FROM booking JOIN schedule ON booking.scheduleId = schedule.id ${condition} GROUP BY month`,
+      const q = connection.query(
+        `SELECT MONTH(booking.createdAt) AS month, SUM(totalPayment) AS revenue 
+        FROM booking 
+        JOIN schedule ON booking.scheduleId = schedule.id 
+        ${condition} 
+        GROUP BY month`,
         (error, result) => {
           if (!error) {
             resolve(result);
@@ -85,6 +96,7 @@ module.exports = {
           }
         }
       );
+      console.log(q);
     }),
   updateStatusBooking: (data, id) =>
     new Promise((resolve, reject) => {
