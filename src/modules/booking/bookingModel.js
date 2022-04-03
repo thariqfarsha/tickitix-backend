@@ -82,7 +82,7 @@ module.exports = {
     }),
   getDashboardBooking: (condition) =>
     new Promise((resolve, reject) => {
-      const q = connection.query(
+      connection.query(
         `SELECT MONTH(booking.createdAt) AS month, SUM(totalPayment) AS revenue 
         FROM booking 
         JOIN schedule ON booking.scheduleId = schedule.id 
@@ -96,7 +96,6 @@ module.exports = {
           }
         }
       );
-      console.log(q);
     }),
   updateStatusBooking: (data, id) =>
     new Promise((resolve, reject) => {
