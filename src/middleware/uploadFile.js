@@ -14,15 +14,37 @@ const helperWrapper = require("../helpers/wrapper");
 // });
 
 module.exports = {
-  moviePoster: (req, res, next) => {
+  movieImage: (req, res, next) => {
     // Jika file disimpan di dalam cloud storage (cloudinary)
     const storage = new CloudinaryStorage({
       cloudinary,
       params: {
-        folder: "Tickitix",
+        folder: "Tickitix/Movie",
       },
     });
     // Tambahkan kondisi untuk limit dan cek ekstensi (fileFilter) di sini (cek multer npm)
+
+    const upload = multer({ storage }).single("image");
+
+    upload(req, res, (error) => {
+      if (error instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
+        return helperWrapper.response(res, 401, error.message, null);
+      }
+      if (error) {
+        // An unknown error occurred when uploading.
+        return helperWrapper.response(res, 401, error.message, null);
+      }
+      return next();
+    });
+  },
+  userImage: (req, res, next) => {
+    const storage = new CloudinaryStorage({
+      cloudinary,
+      params: {
+        folder: "Tickitix/User",
+      },
+    });
 
     const upload = multer({ storage }).single("image");
 

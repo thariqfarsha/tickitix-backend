@@ -17,7 +17,7 @@ Router.post(
   "/",
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
-  middlewareUpload.moviePoster,
+  middlewareUpload.movieImage,
   movieController.createMovie
 ); // auth, isAdmin
 Router.patch(
