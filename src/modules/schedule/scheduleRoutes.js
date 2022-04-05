@@ -4,9 +4,18 @@ const Router = express.Router();
 
 const scheduleController = require("./scheduleController");
 const middlewareAuth = require("../../middleware/auth");
+const middlewareRedis = require("../../middleware/redis");
 
-Router.get("/", scheduleController.getAllSchedule);
-Router.get("/:id", scheduleController.getScheduleById);
+Router.get(
+  "/",
+  middlewareRedis.getAllScheduleRedis,
+  scheduleController.getAllSchedule
+);
+Router.get(
+  "/:id",
+  middlewareRedis.getScheduleByIdRedis,
+  scheduleController.getScheduleById
+);
 Router.post(
   "/",
   middlewareAuth.authentication,
@@ -17,12 +26,14 @@ Router.patch(
   "/:id",
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
+  middlewareRedis.clearScheduleRedis,
   scheduleController.updateSchedule
 );
 Router.delete(
   "/:id",
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
+  middlewareRedis.clearScheduleRedis,
   scheduleController.deleteSchedule
 );
 

@@ -35,9 +35,53 @@ module.exports = {
       return helperWrapper.response(res, 400, error.message, null);
     }
   },
+  getScheduleByIdRedis: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      let result = await redis.get(`getSchedule:${id}`);
+      if (result) {
+        result = JSON.parse(result);
+        return helperWrapper.response(res, 200, "Success get data", result);
+      }
+      return next();
+    } catch (error) {
+      return helperWrapper.response(res, 400, error.message, null);
+    }
+  },
+  getAllScheduleRedis: async (req, res, next) => {
+    try {
+      const data = await redis.get(`getSchedule:${JSON.stringify(req.query)}`);
+      if (data !== null) {
+        const { result, pageInfo } = JSON.parse(data);
+        return helperWrapper.response(
+          res,
+          200,
+          "Success get data!",
+          result,
+          pageInfo
+        );
+      }
+      return next();
+    } catch (error) {
+      return helperWrapper.response(res, 400, error.message, null);
+    }
+  },
   clearMovieRedis: async (req, res, next) => {
     try {
       const keys = await redis.keys("getMovie:*");
+      if (keys.length > 0) {
+        keys.forEach(async (el) => {
+          await redis.del(el);
+        });
+      }
+      return next();
+    } catch (error) {
+      return helperWrapper.response(res, 400, error.message, null);
+    }
+  },
+  clearScheduleRedis: async (req, res, next) => {
+    try {
+      const keys = await redis.keys("getSchedule:*");
       if (keys.length > 0) {
         keys.forEach(async (el) => {
           await redis.del(el);
