@@ -30,4 +30,21 @@ module.exports = {
         }
       );
     }),
+  activateAccount: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "UPDATE user SET status = 'active' WHERE id = ?",
+        id,
+        (error) => {
+          if (!error) {
+            const result = {
+              id,
+            };
+            resolve(result);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
 };

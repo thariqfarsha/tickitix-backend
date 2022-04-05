@@ -39,6 +39,21 @@ module.exports = {
       return helperWrapper.response(res, 400, "Bad response", null);
     }
   },
+  activateAccount: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const result = await authModel.activateAccount(id);
+      return helperWrapper.response(
+        res,
+        200,
+        "Account activated successfully",
+        result
+      );
+    } catch (error) {
+      return helperWrapper.response(res, 400, "Bad request", null);
+    }
+  },
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
