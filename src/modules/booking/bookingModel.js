@@ -55,8 +55,29 @@ module.exports = {
         bookingId,
         (error, result) => {
           if (!error) {
+            // result berbentuk array of object, jadi setiap object dalam array di-map utk diambil valuenya aja
             const newResult = result.map((seatObject) => seatObject.seat);
             resolve(newResult);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
+  getBookingByUserId: (userId) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT booking.id, scheduleId, dateBooking, timeBooking, totalTicket, 
+          totalPayment, paymentMethod, statusPayment, booking.createdAt, 
+          booking.updatedAt, movie.name, movie.category 
+        FROM booking 
+        JOIN schedule ON booking.scheduleId = schedule.id 
+        JOIN movie ON schedule.movieId = movie.id 
+        WHERE userId = ?`,
+        userId,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
           } else {
             reject(new Error(error.sqlMessage));
           }

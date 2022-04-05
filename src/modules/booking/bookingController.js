@@ -4,6 +4,7 @@ const bookingModel = require("./bookingModel");
 module.exports = {
   createBooking: async (req, res) => {
     try {
+      const { id } = req.decodeToken;
       const {
         scheduleId,
         dateBooking,
@@ -14,6 +15,7 @@ module.exports = {
       } = req.body;
 
       const bookingData = {
+        userId: id,
         scheduleId,
         dateBooking,
         timeBooking,
@@ -43,11 +45,6 @@ module.exports = {
       const { id } = req.params;
 
       const bookingInfo = await bookingModel.getBookingById(id);
-      const seatByBookingId = await bookingModel.getSeatBookingByBookingId(id);
-      const result = {
-        ...bookingInfo,
-        seat: seatByBookingId,
-      };
       if (bookingInfo.length <= 0) {
         return helperWrapper.response(
           res,
@@ -56,12 +53,46 @@ module.exports = {
           null
         );
       }
+
+      const seatByBookingId = await bookingModel.getSeatBookingByBookingId(id);
+      const result = {
+        ...bookingInfo,
+        seat: seatByBookingId,
+      };
       return helperWrapper.response(
         res,
         200,
         "Success get booking by id",
         result
       );
+    } catch (error) {
+      return helperWrapper.response(res, 400, "Bad request", null);
+    }
+  },
+  getBookingByUserId: async (req, res) => {
+    try {
+      const { id: userId } = req.params;
+
+      const bookingInfo = await bookingModel.getBookingByUserId(userId);
+      if (bookingInfo.length <= 0) {
+        return helperWrapper.response(
+          res,
+          404,
+          `Data by id ${userId} not found`,
+          null
+        );
+      }
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const data of bookingInfo) {
+        // eslint-disable-next-line no-await-in-loop
+        const seatByBookingId = await bookingModel.getSeatBookingByBookingId(
+          data.id
+        );
+        data.seat = seatByBookingId;
+      }
+
+      return helperWrapper.response(res, 200, "Success get data!", bookingInfo);
     } catch (error) {
       return helperWrapper.response(res, 400, "Bad request", null);
     }
