@@ -25,12 +25,15 @@ Router.patch(
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
   middlewareRedis.clearMovieRedis,
+  middlewareUpload.movieImage,
   movieController.updateMovie
 ); // auth, isAdmin
 Router.delete(
   "/:id",
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
+  middlewareRedis.clearMovieRedis,
+  middlewareUpload.movieImage,
   movieController.deleteMovie
 ); // auth, isAdmin
 

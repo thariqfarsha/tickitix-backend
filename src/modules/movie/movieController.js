@@ -1,6 +1,7 @@
 const redis = require("../../config/redis");
 const helperWrapper = require("../../helpers/wrapper");
 const movieModel = require("./movieModel");
+const cloudinary = require("../../config/cloudinary");
 
 module.exports = {
   getHello: async (req, res) => {
@@ -17,14 +18,21 @@ module.exports = {
   },
   getAllMovie: async (req, res) => {
     try {
-      let { page, limit, searchName, sort } = req.query;
+      // eslint-disable-next-line prefer-const
+      let { page, limit, searchName, sort, searchRelease } = req.query;
       page = +page || 1;
       limit = +limit || 6;
       searchName = `%${searchName || ""}%`;
       sort = sort || "name";
+      const whereCondition = searchRelease
+        ? `AND MONTH(releaseDate) = ${searchRelease}`
+        : "";
 
       const offset = page * limit - limit;
-      const totalData = await movieModel.getCountMovie(searchName);
+      const totalData = await movieModel.getCountMovie(
+        searchName,
+        whereCondition
+      );
       const totalPage = Math.ceil(totalData / limit);
       const pageInfo = {
         page,
@@ -37,7 +45,8 @@ module.exports = {
         limit,
         offset,
         searchName,
-        sort
+        sort,
+        whereCondition
       );
 
       // Masukkan data ke redis
@@ -92,9 +101,6 @@ module.exports = {
         duration,
       } = req.body;
 
-      const { filename, mimetype } = req.file;
-      const imageName = `${filename.split("/")[1]}.${mimetype.split("/")[1]}`;
-
       const setData = {
         name,
         category,
@@ -103,8 +109,14 @@ module.exports = {
         cast,
         director,
         duration,
-        image: imageName,
       };
+
+      // image data dimasukkan ke setData kalau diupload dan ada di req.body
+      if (req.file) {
+        const { filename: imageName, path: imagePath } = req.file;
+        Object.assign(setData, { imageName, imagePath });
+      }
+
       const result = await movieModel.createMovie(setData);
 
       return helperWrapper.response(res, 200, "Success create data!", result);
@@ -134,6 +146,13 @@ module.exports = {
         director,
         duration,
       } = req.body;
+
+      // Hapus image lama di cloudinary jika ada
+      const [currentImageName] = await movieModel.getMovieImage(id);
+      if (currentImageName) {
+        cloudinary.uploader.destroy(currentImageName.imageName);
+      }
+
       const setData = {
         name,
         category,
@@ -144,6 +163,11 @@ module.exports = {
         duration,
         updatedAt: new Date(Date.now()),
       };
+
+      if (req.file) {
+        const { filename: imageName, path: imagePath } = req.file;
+        Object.assign(setData, { imageName, imagePath });
+      }
 
       // kalau ada yang field yang kosong, propertynya akan dihapus dari objek
       // eslint-disable-next-line no-restricted-syntax
@@ -171,6 +195,11 @@ module.exports = {
           `Data by id ${id} not found`,
           null
         );
+      }
+
+      const [currentImageName] = await movieModel.getMovieImage(id);
+      if (currentImageName) {
+        cloudinary.uploader.destroy(currentImageName.imageName);
       }
 
       const result = await movieModel.deleteMovie(id);

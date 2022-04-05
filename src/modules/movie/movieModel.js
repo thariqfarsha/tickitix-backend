@@ -1,10 +1,10 @@
 const connection = require("../../config/mysql");
 
 module.exports = {
-  getCountMovie: (searchName) =>
+  getCountMovie: (searchName, whereCondition) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT COUNT(*) AS total FROM movie WHERE name LIKE ?",
+        `SELECT COUNT(*) AS total FROM movie WHERE name LIKE ? ${whereCondition}`,
         searchName,
         (error, result) => {
           if (!error) {
@@ -15,10 +15,12 @@ module.exports = {
         }
       );
     }),
-  getAllMovie: (limit, offset, searchName, sort) =>
+  getAllMovie: (limit, offset, searchName, sort, whereCondition) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM movie WHERE name LIKE ? ORDER BY ${sort} LIMIT ? OFFSET ?`,
+        `SELECT * FROM movie 
+        WHERE name LIKE ? ${whereCondition} 
+        ORDER BY ${sort} LIMIT ? OFFSET ?`,
         [searchName, limit, offset],
         (error, result) => {
           if (!error) {
@@ -56,6 +58,20 @@ module.exports = {
           reject(new Error(error.sqlMessage));
         }
       });
+    }),
+  getMovieImage: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT imageName FROM movie WHERE id = ?",
+        id,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
     }),
   updateMovie: (id, data) =>
     new Promise((resolve, reject) => {
