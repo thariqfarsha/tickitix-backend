@@ -24,7 +24,16 @@ module.exports = {
     });
     // Tambahkan kondisi untuk limit dan cek ekstensi (fileFilter) di sini (cek multer npm)
 
-    const upload = multer({ storage }).single("image");
+    const upload = multer({
+      storage,
+      limits: { fileSize: 500000 },
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype !== "image/jpeg" || file.mimetype !== "image/png") {
+          cb(new Error("File should be a .jpg or .png image"), false);
+        }
+        cb(null, true);
+      },
+    }).single("image");
 
     upload(req, res, (error) => {
       if (error instanceof multer.MulterError) {
@@ -46,7 +55,16 @@ module.exports = {
       },
     });
 
-    const upload = multer({ storage }).single("image");
+    const upload = multer({
+      storage,
+      limits: { fileSize: 500000 },
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype !== "image/jpeg" || file.mimetype !== "image/png") {
+          cb(new Error("File should be a .jpg or .png image"), false);
+        }
+        cb(null, true);
+      },
+    }).single("image");
 
     upload(req, res, (error) => {
       if (error instanceof multer.MulterError) {
