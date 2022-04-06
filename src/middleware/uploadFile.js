@@ -28,7 +28,7 @@ module.exports = {
       storage,
       limits: { fileSize: 500000 },
       fileFilter: (req, file, cb) => {
-        if (file.mimetype !== "image/jpeg" || file.mimetype !== "image/png") {
+        if (file.mimetype !== "image/jpeg" && file.mimetype !== "image/png") {
           cb(new Error("File should be a .jpg or .png image"), false);
         }
         cb(null, true);
@@ -59,7 +59,7 @@ module.exports = {
       storage,
       limits: { fileSize: 500000 },
       fileFilter: (req, file, cb) => {
-        if (file.mimetype !== "image/jpeg" || file.mimetype !== "image/png") {
+        if (file.mimetype !== "image/jpeg" && file.mimetype !== "image/png") {
           cb(new Error("File should be a .jpg or .png image"), false);
         }
         cb(null, true);
