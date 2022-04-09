@@ -105,7 +105,8 @@ module.exports = {
         refreshToken,
       });
     } catch (error) {
-      return helperWrapper.response(res, 400, "Bad response", null);
+      console.log(error);
+      return helperWrapper.response(res, 400, "Bad request", null);
     }
   },
   refresh: async (req, res) => {
