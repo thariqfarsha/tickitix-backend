@@ -26,7 +26,7 @@ module.exports = {
         totalTicket: seats.length,
         paymentMethod,
         totalPayment,
-        statusPayment: "success",
+        statusPayment: "pending",
         statusUsed: "active",
       };
 
@@ -44,7 +44,9 @@ module.exports = {
 
       // Set redirect url to redis
       await redis.setEx(
-        `redirectUrl:${bookingInfo.id}, 3600 * 24, ${resultMidtrans.redirect_url}`
+        `redirectUrl:${bookingInfo.id}`,
+        3600 * 24,
+        resultMidtrans.redirect_url
       );
 
       return helperWrapper.response(res, 200, "Success create booking", {
