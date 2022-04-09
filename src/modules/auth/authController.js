@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid");
 const helperWrapper = require("../../helpers/wrapper");
 const { sendMail } = require("../../helpers/mail");
 const authModel = require("./authModel");
@@ -28,6 +29,7 @@ module.exports = {
       const hash = await bcrypt.hash(password, salt);
 
       const setData = {
+        id: uuidv4(),
         firstName,
         lastName,
         noTelp,
