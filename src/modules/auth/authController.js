@@ -11,6 +11,18 @@ module.exports = {
     try {
       const { firstName, lastName, noTelp, email, password } = req.body;
 
+      // Email format validation
+      const validateEmail = (checkEmail) =>
+        String(checkEmail)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+
+      if (!validateEmail(email)) {
+        return helperWrapper.response(res, 400, "Email is invalid", null);
+      }
+
       // Email checking
       const checkUser = await authModel.getUserByEmail(email);
 
@@ -105,7 +117,6 @@ module.exports = {
         refreshToken,
       });
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(res, 400, "Bad request", null);
     }
   },
