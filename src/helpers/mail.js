@@ -4,9 +4,9 @@ require("dotenv").config();
 const fs = require("fs");
 const mustache = require("mustache");
 
-const clientId = process.env.CLIENT_ID;
-const clientSecret = process.env.CLIENT_SECRET;
-const refreshToken = process.env.REFRESH_TOKEN;
+const clientId = process.env.MAIL_CLIENT_ID;
+const clientSecret = process.env.MAIL_CLIENT_SECRET;
+const refreshToken = process.env.MAIL_REFRESH_TOKEN;
 
 const { OAuth2 } = google.auth;
 const OAuth2Client = new OAuth2(clientId, clientSecret);
