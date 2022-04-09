@@ -3,13 +3,12 @@ const connection = require("../../config/mysql");
 module.exports = {
   createBooking: (data) =>
     new Promise((resolve, reject) => {
-      connection.query("INSERT INTO booking SET ?", data, (error, result) => {
+      connection.query("INSERT INTO booking SET ?", data, (error) => {
         if (!error) {
-          const newResult = {
-            id: result.insertId,
+          const result = {
             ...data,
           };
-          resolve(newResult);
+          resolve(result);
         } else {
           reject(new Error(error.sqlMessage));
         }
@@ -125,7 +124,7 @@ module.exports = {
         [data, id],
         (error) => {
           if (!error) {
-            resolve({ id, updatedAt: data.updatedAt });
+            resolve({ id, ...data, updatedAt: data.updatedAt });
           } else {
             reject(new Error(error.sqlMessage));
           }

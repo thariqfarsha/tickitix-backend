@@ -5,6 +5,10 @@ const middlewareAuth = require("../../middleware/auth");
 const Router = express.Router();
 
 Router.post("/", bookingController.createBooking);
+Router.post(
+  "/midtrans-notification",
+  bookingController.postMidtransNotification
+);
 Router.get("/id/:id", bookingController.getBookingById);
 Router.get("/user/:id", bookingController.getBookingByUserId);
 Router.get("/seat", bookingController.getSeatBooking);

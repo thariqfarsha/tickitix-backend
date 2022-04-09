@@ -1,10 +1,13 @@
+const { v4: uuidv4 } = require("uuid");
 const helperWrapper = require("../../helpers/wrapper");
 const bookingModel = require("./bookingModel");
+const helperMidtrans = require("../../helpers/midtrans");
+const redis = require("../../config/redis");
 
 module.exports = {
   createBooking: async (req, res) => {
     try {
-      const { id } = req.decodeToken;
+      const { id: userId } = req.decodeToken;
       const {
         scheduleId,
         dateBooking,
@@ -15,7 +18,8 @@ module.exports = {
       } = req.body;
 
       const bookingData = {
-        userId: id,
+        id: uuidv4(),
+        userId,
         scheduleId,
         dateBooking,
         timeBooking,
@@ -32,10 +36,71 @@ module.exports = {
         bookingModel.createSeatBooking({ bookingId: bookingInfo.id, seat })
       );
 
+      const setDataMidtrans = {
+        orderId: bookingInfo.id,
+        totalPayment,
+      };
+      const resultMidtrans = await helperMidtrans.post(setDataMidtrans);
+
+      // Set redirect url to redis
+      await redis.setEx(
+        `redirectUrl:${bookingInfo.id}, 3600 * 24, ${resultMidtrans.redirect_url}`
+      );
+
       return helperWrapper.response(res, 200, "Success create booking", {
         ...bookingInfo,
         seats: req.body.seats,
+        redirectUrl: resultMidtrans.redirect_url,
       });
+    } catch (error) {
+      return helperWrapper.response(res, 400, "Bad request", null);
+    }
+  },
+  postMidtransNotification: async (req, res) => {
+    try {
+      const statusResponse = await helperMidtrans.notif(req.body);
+
+      const orderId = statusResponse.order_id;
+      const transactionStatus = statusResponse.transaction_status;
+      const fraudStatus = statusResponse.fraud_status;
+
+      const setData = {
+        paymentMethod: statusResponse.payment_type,
+        updatedAt: new Date(Date.now()),
+      };
+      if (transactionStatus === "capture") {
+        // capture only applies to card transaction, which you need to check for the fraudStatus
+        if (fraudStatus === "challenge") {
+          // TODO set transaction status on your databaase to 'challenge'
+          setData.statusPayment = "pending";
+        } else if (fraudStatus === "accept") {
+          // TODO set transaction status on your databaase to 'success'
+          setData.statusPayment = "success";
+        }
+      } else if (transactionStatus === "settlement") {
+        // TODO set transaction status on your databaase to 'success'
+        setData.statusPayment = "success";
+      } else if (transactionStatus === "deny") {
+        // TODO you can ignore 'deny', because most of the time it allows payment retries
+        // and later can become success
+      } else if (
+        transactionStatus === "cancel" ||
+        transactionStatus === "expire"
+      ) {
+        // TODO set transaction status on your databaase to 'failure'
+        setData.statusPayment = "failure";
+      } else if (transactionStatus === "pending") {
+        // TODO set transaction status on your databaase to 'pending' / waiting payment
+        setData.statusPayment = "pending";
+      }
+
+      const result = await bookingModel.updateStatusBooking(setData, orderId);
+      return helperWrapper.response(
+        res,
+        200,
+        "Success update booking info",
+        result
+      );
     } catch (error) {
       return helperWrapper.response(res, 400, "Bad request", null);
     }
