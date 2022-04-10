@@ -40,7 +40,7 @@ module.exports = {
         );
       }
 
-      if (+id !== req.decodeToken.id) {
+      if (id !== req.decodeToken.id) {
         return helperWrapper.response(
           res,
           401,
@@ -87,8 +87,7 @@ module.exports = {
           null
         );
       }
-
-      if (+id !== req.decodeToken.id) {
+      if (id !== req.decodeToken.id) {
         return helperWrapper.response(
           res,
           401,
@@ -135,7 +134,7 @@ module.exports = {
         );
       }
 
-      if (+id !== req.decodeToken.id) {
+      if (id !== req.decodeToken.id) {
         return helperWrapper.response(
           res,
           401,
