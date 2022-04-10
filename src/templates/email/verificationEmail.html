@@ -8,12 +8,23 @@
       h1 {
         color: teal;
       }
+      button {
+        color: whitesmoke;
+        font-size: 1rem;
+        background-color: teal;
+        padding: 0.8rem 1.2rem;
+        border-radius: 40px;
+        border: transparent;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
-    <h1>Hello {{name}}</h1>
-    <a href="http://localhost:3001/auth/activate/{{id}}">
-      <button>Click to verify your email</button>
+    <h1>Hello {{name}} &#x1F44B</h1>
+    <p>Welcome to Tickitix, your movie ticket booking companion</p>
+    <p>Click this button below to activate your account and save a seat for your favorite show!</p>
+    <a href="https://tickitix.herokuapp.com/auth/activate/{{id}}">
+      <button>Activate my account</button>
     </a>
   </body>
 </html>
