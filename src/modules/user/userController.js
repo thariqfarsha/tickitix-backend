@@ -144,6 +144,22 @@ module.exports = {
       }
 
       const { newPassword, confirmPassword } = req.body;
+
+      // Password format validation
+      const validatePassword = (checkPassword) =>
+        String(checkPassword).match(
+          /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-/<>]).{8,}$/
+        );
+
+      if (!validatePassword(newPassword)) {
+        return helperWrapper.response(
+          res,
+          400,
+          "Password should be at least 8 characters and contain at least 1 capital letter, 1 number, and 1 special character",
+          null
+        );
+      }
+
       if (newPassword !== confirmPassword) {
         return helperWrapper.response(
           res,
