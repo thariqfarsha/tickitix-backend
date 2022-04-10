@@ -1,10 +1,10 @@
-# ExpressJS - Tickitix RESTfull API
+# ExpressJS - Tickitix RESTful API
 
 Movie ticket booking API
 
 ## Description
 
-This project is a RESTful API of movie ticket bookig app.
+This project is a RESTful API of movie ticket booking app. This API let you perform movie ticket booking realted action such as CRUD operation for movie list and schedule list, booking seats, and even for displaying dashboard of monthly revenue. For a complete list of action this API can serve, please refer to this [postman documentation](https://documenter.getpostman.com/view/20140040/UVyuRuiV)
 
 ## Built With
 
@@ -16,37 +16,60 @@ This project is a RESTful API of movie ticket bookig app.
 ### Requirements
 
 1. [Node.JS](https://nodejs.org/en/download/)
-2. Node_modules
+2. Node_modules  
+   Download all dependencies needed for this project by simply run this command
 
    ```
    npm install
    ```
 
-3. [Postman](https://www.getpostman.com/)
-4. Web Server and MySQL (e.g. [XAMPP](https://www.apachefriends.org/download.html))
+3. API Development tools  
+   This project uses [Postman](https://www.getpostman.com/)
+4. Web Server and MySQL  
+   This project uses [XAMPP](https://www.apachefriends.org/download.html)
 5. [Redis](https://redis.io/download/)
-6. [Cloudinary](https://cloudinary.com/)
+6. Cloud-based image and video management service  
+   This project uses [Cloudinary](https://cloudinary.com/)
+7. Payment gateway service  
+   This project uses [Midtrans](https://midtrans.com/)
 
 ### Executing Program
 
 1. Make sure you have already installed all of the [**requirements**](#requirements)
 2. Create a new file called **.env**, and then set it up [like this](#set-up-env-file)
 3. Turn on Web Server and MySQL
-4. Create a database with the name #nama_database, and Import file sql to **phpmyadmin**
+4. Import sql file to **phpmyadmin**
 5. Open Postman desktop application or web app
-6. Choose HTTP Method and enter request url.(ex. localhost:3000/)
+6. Choose HTTP Method and enter request url (e.g. localhost:3001/)
 7. You can see all the end points [here](https://documenter.getpostman.com/view/20140040/UVyuRuiV)
 
 ### Set up .env file
 
-Open .env file on your favorite code editor, and copy paste this code below :
+Create an `.env` file on root folder and copy this code below into it. Change its value with your own credential. You can also use `.env.example` file and simply rename it to `.env`
 
 ```
-PORT = 3001 // set port number
-DB_HOST = "localhost"
-DB_USER = "root"
-DB_PASSWORD = ""
-DB_NAME = "tickitix"
+PORT=
+
+MYSQL_HOST=
+MYSQL_USER=
+MYSQL_PASSWORD=
+MYSQL_DATABASE=
+
+REDIS_HOST=
+REDIS_PORT=
+REDIS_PASSWORD=
+
+CLOUDINARY_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+MAIL_CLIENT_ID=
+MAIL_CLIENT_SECRET=
+MAIL_REFRESH_TOKEN=
+
+MIDTRANS_PRODUCTION=
+MIDTRANS_SERVER_KEY=
+MIDTRANS_CLIENT_KEY=
 ```
 
 ## License
