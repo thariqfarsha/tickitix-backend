@@ -70,6 +70,11 @@ module.exports = {
         paymentMethod: statusResponse.payment_type,
         updatedAt: new Date(Date.now()),
       };
+
+      console.log(
+        `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`
+      );
+
       if (transactionStatus === "capture") {
         // capture only applies to card transaction, which you need to check for the fraudStatus
         if (fraudStatus === "challenge") {
