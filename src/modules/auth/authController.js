@@ -23,7 +23,22 @@ module.exports = {
         return helperWrapper.response(res, 400, "Email is invalid", null);
       }
 
-      // Email checking
+      // Password format validation
+      const validatePassword = (checkPassword) =>
+        String(checkPassword).match(
+          /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-/<>]).{8,}$/
+        );
+
+      if (!validatePassword(password)) {
+        return helperWrapper.response(
+          res,
+          400,
+          "Password should be at least 8 characters and contain at least 1 capital letter, 1 number, and 1 special character",
+          null
+        );
+      }
+
+      // Registered email checking
       const checkUser = await authModel.getUserByEmail(email);
 
       if (checkUser.length > 0) {
@@ -52,7 +67,7 @@ module.exports = {
       const result = await authModel.register(setData);
       const setSendMail = {
         to: email,
-        subject: "Email verification",
+        subject: "Account activation",
         name: firstName,
         template: "verificationEmail.html",
         id: result.id,
