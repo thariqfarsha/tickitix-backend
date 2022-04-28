@@ -55,6 +55,7 @@ module.exports = {
         redirectUrl: resultMidtrans.redirect_url,
       });
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(res, 400, "Bad request", null);
     }
   },
