@@ -4,7 +4,7 @@ module.exports = {
   getUserById: (id) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT firstName, lastName, noTelp, imagePath FROM user WHERE id = ?",
+        "SELECT firstName, lastName, noTelp, role, imagePath FROM user WHERE id = ?",
         id,
         (error, result) => {
           if (!error) {
