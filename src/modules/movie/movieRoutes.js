@@ -17,6 +17,7 @@ Router.post(
   "/",
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
+  middlewareRedis.clearMovieRedis,
   middlewareUpload.movieImage,
   movieController.createMovie
 ); // auth, isAdmin

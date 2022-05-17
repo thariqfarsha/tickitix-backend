@@ -20,6 +20,7 @@ Router.post(
   "/",
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
+  middlewareRedis.clearScheduleRedis,
   scheduleController.createSchedule
 );
 Router.patch(
