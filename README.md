@@ -72,6 +72,8 @@ MIDTRANS_SERVER_KEY=
 MIDTRANS_CLIENT_KEY=
 ```
 
+---
+
 ## License
 
 © [Thariq Farsha](https://github.com/thariqfarsha/)
