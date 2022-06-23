@@ -68,7 +68,7 @@ module.exports = {
       connection.query(
         `SELECT booking.id, scheduleId, dateBooking, timeBooking, totalTicket, 
           totalPayment, paymentMethod, statusPayment, booking.createdAt, 
-          booking.updatedAt, movie.name, movie.category 
+          booking.updatedAt, movie.name, movie.category, statusUsed 
         FROM booking 
         JOIN schedule ON booking.scheduleId = schedule.id 
         JOIN movie ON schedule.movieId = movie.id 
