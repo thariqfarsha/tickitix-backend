@@ -120,6 +120,38 @@ module.exports = {
       return helperWrapper.response(res, 400, "Bad request", null);
     }
   },
+  deleteImage: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const checkId = await userModel.getUserById(id);
+      if (checkId.length <= 0) {
+        return helperWrapper.response(
+          res,
+          404,
+          `Data with id ${id} not found`,
+          null
+        );
+      }
+
+      const [currentImageName] = await userModel.getImage(id);
+      if (currentImageName) {
+        cloudinary.uploader.destroy(currentImageName.imageName);
+      }
+
+      const result = await userModel.deleteImage(id);
+
+      return helperWrapper.response(
+        res,
+        200,
+        "Image deleted successfully!",
+        result
+      );
+    } catch (error) {
+      console.log(error);
+      return helperWrapper.response(res, 400, "Bad request", null);
+    }
+  },
   updatePassword: async (req, res) => {
     try {
       const { id } = req.params;

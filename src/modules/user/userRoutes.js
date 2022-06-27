@@ -12,5 +12,6 @@ Router.patch(
   userController.updateImage
 );
 Router.patch("/password/:id", userController.updatePassword);
+Router.delete("/image/:id", userController.deleteImage);
 
 module.exports = Router;

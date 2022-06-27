@@ -65,6 +65,23 @@ module.exports = {
         }
       );
     }),
+  deleteImage: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "UPDATE user SET imageName = null, imagePath = null WHERE id = ?",
+        id,
+        (error) => {
+          if (!error) {
+            const result = {
+              id,
+            };
+            resolve(result);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
   updatePassword: (id, hash) =>
     new Promise((resolve, reject) => {
       connection.query(
