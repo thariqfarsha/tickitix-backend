@@ -126,7 +126,7 @@ module.exports = {
         notification: {
           title: "New Movie",
           body: `${name} is just released! Grab your ticket now!`,
-          imageUrl: result.data.imagePath,
+          imageUrl: req.file.path,
         },
       });
 
