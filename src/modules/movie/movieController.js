@@ -2,6 +2,7 @@ const redis = require("../../config/redis");
 const helperWrapper = require("../../helpers/wrapper");
 const movieModel = require("./movieModel");
 const cloudinary = require("../../config/cloudinary");
+const admin = require("../../config/firebase");
 
 module.exports = {
   getHello: async (req, res) => {
@@ -118,6 +119,16 @@ module.exports = {
       }
 
       const result = await movieModel.createMovie(setData);
+      admin.messaging().send({
+        // token:
+        //   "e0kJVScWSz-S0JlzmPpmQD:APA91bFegmq4v8zrt7Ew3cC0vGUIWL8FsrDg1ibqm3QvXXl4NAuo2Kj2r9RYr06EmH8ma4Tos73KVQWxa0LxCBKVMJT1Kb5jHkbpt2MsDys6Ef9UIj-cT7OIHmUxoUbriChLEv6B6Njx",
+        topic: "new-movie",
+        notification: {
+          title: "New Movie",
+          body: `${name} is just released! Grab your ticket now!`,
+          imageUrl: req.file.path,
+        },
+      });
 
       return helperWrapper.response(res, 200, "Success create data!", result);
     } catch (error) {
