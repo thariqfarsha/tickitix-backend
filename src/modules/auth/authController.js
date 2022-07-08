@@ -153,7 +153,7 @@ module.exports = {
         );
       }
 
-      jwt.verify(refreshToken, "RAHASIABARU", async (result) => {
+      jwt.verify(refreshToken, "RAHASIABARU", async (error, result) => {
         try {
           const payload = result;
           delete payload.iat;
@@ -163,7 +163,6 @@ module.exports = {
           const newRefreshToken = jwt.sign(payload, "RAHASIABARU", {
             expiresIn: "24h",
           });
-
           await redis.setEx(
             `refreshToken:${refreshToken}`,
             3600 * 48,
@@ -175,7 +174,7 @@ module.exports = {
             token,
             refreshToken: newRefreshToken,
           });
-        } catch (error) {
+        } catch (err) {
           return helperWrapper.response(res, 400, "Bad response", null);
         }
       });
