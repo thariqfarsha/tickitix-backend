@@ -143,6 +143,7 @@ module.exports = {
       const checkRefreshTokenRedis = await redis.get(
         `refreshToken:${refreshToken}`
       );
+
       if (checkRefreshTokenRedis) {
         return helperWrapper.response(
           res,
@@ -152,27 +153,31 @@ module.exports = {
         );
       }
 
-      jwt.verify(refreshToken, "RAHASIABARU", async (error, result) => {
-        const payload = result;
-        delete payload.iat;
-        delete payload.exp;
+      jwt.verify(refreshToken, "RAHASIABARU", async (result) => {
+        try {
+          const payload = result;
+          delete payload.iat;
+          delete payload.exp;
 
-        const token = jwt.sign(payload, "RAHASIA", { expiresIn: "1h" });
-        const newRefreshToken = jwt.sign(payload, "RAHASIABARU", {
-          expiresIn: "24h",
-        });
+          const token = jwt.sign(payload, "RAHASIA", { expiresIn: "1h" });
+          const newRefreshToken = jwt.sign(payload, "RAHASIABARU", {
+            expiresIn: "24h",
+          });
 
-        await redis.setEx(
-          `refreshToken:${refreshToken}`,
-          3600 * 48,
-          refreshToken
-        );
+          await redis.setEx(
+            `refreshToken:${refreshToken}`,
+            3600 * 48,
+            refreshToken
+          );
 
-        return helperWrapper.response(res, 200, "Success refresh token", {
-          id: payload.id,
-          token,
-          refreshToken: newRefreshToken,
-        });
+          return helperWrapper.response(res, 200, "Success refresh token", {
+            id: payload.id,
+            token,
+            refreshToken: newRefreshToken,
+          });
+        } catch (error) {
+          return helperWrapper.response(res, 400, "Bad response", null);
+        }
       });
     } catch (error) {
       return helperWrapper.response(res, 400, "Bad response", null);
