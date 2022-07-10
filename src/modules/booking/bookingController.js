@@ -150,9 +150,9 @@ module.exports = {
       if (bookingInfo.length <= 0) {
         return helperWrapper.response(
           res,
-          404,
+          204,
           `Data by id ${userId} not found`,
-          null
+          []
         );
       }
 
