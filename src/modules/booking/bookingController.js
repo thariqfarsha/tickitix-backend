@@ -147,14 +147,14 @@ module.exports = {
       const { id: userId } = req.params;
 
       const bookingInfo = await bookingModel.getBookingByUserId(userId);
-      if (bookingInfo.length <= 0) {
-        return helperWrapper.response(
-          res,
-          204,
-          `Data by id ${userId} not found`,
-          []
-        );
-      }
+      // if (bookingInfo.length <= 0) {
+      //   return helperWrapper.response(
+      //     res,
+      //     200,
+      //     `Data by id ${userId} not found`,
+      //     []
+      //   );
+      // }
 
       // eslint-disable-next-line no-restricted-syntax
       for (const data of bookingInfo) {
