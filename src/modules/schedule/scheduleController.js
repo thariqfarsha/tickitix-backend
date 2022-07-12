@@ -87,6 +87,7 @@ module.exports = {
       const result = await scheduleModel.createSchedule(setData);
       return helperWrapper.response(res, 200, "Success create data", result);
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(res, 400, "Bad request", null);
     }
   },

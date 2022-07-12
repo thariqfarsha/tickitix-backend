@@ -25,6 +25,7 @@ module.exports = {
           if (!error) {
             resolve(result);
           } else {
+            console.log(error);
             reject(new Error(error.sqlMessage));
           }
         }
