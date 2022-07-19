@@ -5,6 +5,7 @@ const helperWrapper = require("../../helpers/wrapper");
 const { sendMail } = require("../../helpers/mail");
 const authModel = require("./authModel");
 const redis = require("../../config/redis");
+const userModel = require("../user/userModel");
 
 module.exports = {
   register: async (req, res) => {
@@ -180,6 +181,7 @@ module.exports = {
         }
       });
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(res, 400, "Bad response", null);
     }
   },
@@ -194,6 +196,114 @@ module.exports = {
       return helperWrapper.response(res, 200, "Success logout", null);
     } catch (error) {
       return helperWrapper.response(res, 400, "Bad response", null);
+    }
+  },
+  forgotPassword: async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      // Email format validation
+      const validateEmail = (checkEmail) =>
+        String(checkEmail)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+
+      if (!validateEmail(email)) {
+        return helperWrapper.response(res, 400, "Email is invalid", null);
+      }
+
+      // Non registered email checking
+      const checkUser = await authModel.getUserByEmail(email);
+
+      if (checkUser.length === 0) {
+        return helperWrapper.response(
+          res,
+          404,
+          "Email is not registered",
+          null
+        );
+      }
+
+      const { id, firstName } = checkUser[0];
+
+      const otp = Math.floor(100000 + Math.random() * 900000);
+
+      await redis.setEx(`otp-id:${id}`, 60 * 5, otp);
+
+      const setSendMail = {
+        to: email,
+        subject: "Reset Password",
+        name: firstName,
+        template: "resetPasswordEmail.html",
+        id,
+        otp,
+        linkReset: process.env.RESET_PASSWORD_URL,
+      };
+      await sendMail(setSendMail);
+
+      return helperWrapper.response(
+        res,
+        200,
+        "Check your inbox to reset your password",
+        { id, email }
+      );
+    } catch (error) {
+      console.log(error);
+      return helperWrapper.response(res, 400, "Bad request", null);
+    }
+  },
+  resetPassword: async (req, res) => {
+    try {
+      const { id, otp, newPassword, confirmPassword } = req.body;
+
+      const checkOtp = await redis.get(`otp-id:${id}`);
+      if (checkOtp !== otp) {
+        return helperWrapper.response(res, 400, "OTP is not valid", null);
+      }
+
+      // Password format validation
+      const validatePassword = (checkPassword) =>
+        String(checkPassword).match(
+          /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-/<>]).{8,}$/
+        );
+
+      if (!validatePassword(newPassword)) {
+        return helperWrapper.response(
+          res,
+          400,
+          "New password should be at least 8 characters and contain at least 1 capital letter, 1 number, and 1 special character",
+          null
+        );
+      }
+
+      if (newPassword !== confirmPassword) {
+        return helperWrapper.response(
+          res,
+          400,
+          "Confirm password should be the same as new password",
+          null
+        );
+      }
+
+      // Password Hashing
+      const saltRounds = 10;
+      const salt = await bcrypt.genSalt(saltRounds);
+      const hash = await bcrypt.hash(newPassword, salt);
+
+      const result = await userModel.updatePassword(id, hash);
+
+      await redis.del(`otp-id:${id}`);
+
+      return helperWrapper.response(
+        res,
+        200,
+        "Your password is successfully updated",
+        result
+      );
+    } catch (error) {
+      return helperWrapper.response(res, 400, `Bad request: ${error}`, null);
     }
   },
 };
